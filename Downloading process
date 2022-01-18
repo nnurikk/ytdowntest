@@ -1,0 +1,48 @@
+import requests
+
+base_url = "https://api.telegram.org/bot5080502559:AAG3p_UxPrZqkxdAYOSLkDaHOuq4g0MmP8s/getupdates
+with open("/content/sample_data/offset.txt") as f:
+  offset = f.read()
+
+if not offset:
+  offset = 1
+else:
+  offset = int(offset) + 1
+
+parameters = {"offset" : offset }
+
+resp = requests.get(base_url, data = parameters)
+
+if len(resp.json()["result"]) > 0:
+  update_id = str(resp.json()["result"][-1]["update_id"])
+  with open("/content/sample_data/offset.txt", "w") as f:
+    f.write(update_id)
+
+for item in resp.json()["result"]:
+  text = item["message"]["text"]
+  print(text)
+from pytube import YouTube 
+
+
+path = '/content/sample_data'
+
+link= text
+
+video = YouTube(link)
+video = video.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+
+video_saved_path = video.download(path)
+print(video_saved_path)
+import requests
+
+base_url = "https://api.telegram.org/bot5080502559:AAG3p_UxPrZqkxdAYOSLkDaHOuq4g0MmP8s-UgT4/sendVideo"
+
+
+my_file = open(video_saved_path, "rb")
+
+parameters = { "chat_id" : "-767155917" }
+
+files = { "video" : my_file }
+
+resp = requests.get(base_url, data = parameters, files=files)
+print(resp.text)
